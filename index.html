@@ -56,47 +56,46 @@
 
 <script>
     // ============================
-    // JAM DIGITAL
+    // Fungsi Tampil Jam
     // ============================
     function updateClock() {
         let now = new Date();
         let h = String(now.getHours()).padStart(2, '0');
         let m = String(now.getMinutes()).padStart(2, '0');
         let s = String(now.getSeconds()).padStart(2, '0');
-
+        
         document.getElementById("clock").textContent = ${h}:${m}:${s};
-
         updateAlert(${h}:${m});
     }
     setInterval(updateClock, 1000);
     updateClock();
 
     // ============================
-    // HARI TANGGAL INDONESIA
+    // Hari & Tanggal Indonesia
     // ============================
     function updateDate() {
         let now = new Date();
         let hari = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
         let bulan = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+        
         let tgl = ${hari[now.getDay()]}, ${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()};
         document.getElementById("date").textContent = tgl;
     }
     updateDate();
 
     // ============================
-    // AMBIL JADWAL SHOLAT
-    // GAMPING, SLEMAN
+    // Jadwal Sholat API (Gamping)
     // ============================
     let prayerTimes = {};
     fetch("https://api.aladhan.com/v1/timingsByAddress?address=Gamping,Sleman,Indonesia")
         .then(res => res.json())
         .then(data => {
             prayerTimes = {
-                Subuh: data.data.timings.Fajr,
-                Dzuhur: data.data.timings.Dhuhr,
-                Ashar: data.data.timings.Asr,
-                Maghrib: data.data.timings.Maghrib,
-                Isya: data.data.timings.Isha
+                Subuh: data.data.timings.Fajr.substring(0,5),
+                Dzuhur: data.data.timings.Dhuhr.substring(0,5),
+                Ashar: data.data.timings.Asr.substring(0,5),
+                Maghrib: data.data.timings.Maghrib.substring(0,5),
+                Isya: data.data.timings.Isha.substring(0,5)
             };
 
             document.getElementById("prayer-times").innerHTML =
@@ -120,17 +119,14 @@
 
                 playAdzanAlarm();
                 startIqomahCountdown(key);
-                return;
             }
         }
     }
 
     function playAdzanAlarm() {
         let alarm = document.getElementById("alarm");
-
-        document.getElementById("alert").textContent = "ADZAN";
-
         alarm.play();
+        document.getElementById("alert").textContent = "ADZAN";
 
         setTimeout(() => {
             alarm.pause();
@@ -139,7 +135,8 @@
     }
 
     function startIqomahCountdown(prayerName) {
-        let seconds = 15 * 60;
+        let seconds = 15 * 60; // 15 menit
+
         clearInterval(iqomahTimer);
 
         iqomahTimer = setInterval(() => {
@@ -156,6 +153,7 @@
 
             document.getElementById("alert").textContent =
                 IQOMAH ${prayerName} dalam ${m}:${String(s).padStart(2,'0')};
+
         }, 1000);
     }
 </script>

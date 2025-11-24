@@ -83,28 +83,29 @@
     }
     updateDate();
 
-    // ============================
-    // Jadwal Sholat API (Gamping)
-    // ============================
-    let prayerTimes = {};
-    fetch("https://api.aladhan.com/v1/timingsByAddress?address=Gamping,Sleman,Indonesia")
-        .then(res => res.json())
-        .then(data => {
-            prayerTimes = {
-                Subuh: data.data.timings.Fajr.substring(0,5),
-                Dzuhur: data.data.timings.Dhuhr.substring(0,5),
-                Ashar: data.data.timings.Asr.substring(0,5),
-                Maghrib: data.data.timings.Maghrib.substring(0,5),
-                Isya: data.data.timings.Isha.substring(0,5)
-            };
+   // ============================
+// Jadwal Sholat API (Gamping)
+// ============================
+let prayerTimes = {};
 
-            document.getElementById("prayer-times").innerHTML =
-                `Subuh: ${prayerTimes.Subuh}<br>
-                 Dzuhur: ${prayerTimes.Dzuhur}<br>
-                 Ashar: ${prayerTimes.Ashar}<br>
-                 Maghrib: ${prayerTimes.Maghrib}<br>
-                 Isya: ${prayerTimes.Isya}`;
-        });
+fetch("https://api.aladhan.com/v1/timingsByCity?city=Gamping&country=Indonesia&method=2")
+    .then(res => res.json())
+    .then(data => {
+        prayerTimes = {
+            Subuh: data.data.timings.Fajr.substring(0,5),
+            Dzuhur: data.data.timings.Dhuhr.substring(0,5),
+            Ashar: data.data.timings.Asr.substring(0,5),
+            Maghrib: data.data.timings.Maghrib.substring(0,5),
+            Isya: data.data.timings.Isha.substring(0,5)
+        };
+
+        document.getElementById("prayer-times").innerHTML =
+            `Subuh: ${prayerTimes.Subuh}<br>
+             Dzuhur: ${prayerTimes.Dzuhur}<br>
+             Ashar: ${prayerTimes.Ashar}<br>
+             Maghrib: ${prayerTimes.Maghrib}<br>
+             Isya: ${prayerTimes.Isya}`;
+    });
 
     // ============================
     // ADZAN + ALARM + IQOMAH
@@ -159,3 +160,4 @@
 
 </body>
 </html>
+

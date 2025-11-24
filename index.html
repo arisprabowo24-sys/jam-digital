@@ -64,8 +64,8 @@
         let m = String(now.getMinutes()).padStart(2, '0');
         let s = String(now.getSeconds()).padStart(2, '0');
         
-        document.getElementById("clock").textContent = ${h}:${m}:${s};
-        updateAlert(${h}:${m});
+        document.getElementById("clock").textContent = `${h}:${m}:${s}`;
+        updateAlert(`${h}:${m}`);
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -75,10 +75,10 @@
     // ============================
     function updateDate() {
         let now = new Date();
-        let hari = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+        let hari = ["Mingggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
         let bulan = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
         
-        let tgl = ${hari[now.getDay()]}, ${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()};
+        let tgl = `${hari[now.getDay()]}, ${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()}`;
         document.getElementById("date").textContent = tgl;
     }
     updateDate();
@@ -100,10 +100,10 @@
 
             document.getElementById("prayer-times").innerHTML =
                 `Subuh: ${prayerTimes.Subuh}<br>
-                Dzuhur: ${prayerTimes.Dzuhur}<br>
-                Ashar: ${prayerTimes.Ashar}<br>
-                Maghrib: ${prayerTimes.Maghrib}<br>
-                Isya: ${prayerTimes.Isya}`;
+                 Dzuhur: ${prayerTimes.Dzuhur}<br>
+                 Ashar: ${prayerTimes.Ashar}<br>
+                 Maghrib: ${prayerTimes.Maghrib}<br>
+                 Isya: ${prayerTimes.Isya}`;
         });
 
     // ============================
@@ -152,8 +152,7 @@
             let s = seconds % 60;
 
             document.getElementById("alert").textContent =
-                IQOMAH ${prayerName} dalam ${m}:${String(s).padStart(2,'0')};
-
+                `IQOMAH ${prayerName} dalam ${m}:${String(s).padStart(2,'0')}`;
         }, 1000);
     }
 </script>

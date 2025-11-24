@@ -19,26 +19,30 @@
     }
 
     #clock {
-        font-size: 22vw;
+        font-size: 20vw;
         font-weight: bold;
+        margin-bottom: 20px;
     }
 
-    #date {
-        font-size: 5vw;
-        margin-top: -20px;
-    }
-
-    #prayer-times {
-        font-size: 4.5vw;
+    #prayer-box {
+        display: flex;
+        gap: 4vw;
+        font-size: 4vw;
         margin-top: 10px;
-        line-height: 1.4;
     }
 
-    #alert {
-        font-size: 12vw;
-        color: yellow;
-        margin-top: 20px;
-        font-weight: bold;
+    .item {
+        text-align: center;
+    }
+
+    .label {
+        font-size: 3vw;
+        color: #00b4cc;
+    }
+
+    .time {
+        font-size: 4.5vw;
+        margin-top: 5px;
     }
 </style>
 
@@ -46,118 +50,59 @@
 <body>
 
 <div id="clock">00:00:00</div>
-<div id="date">Loading...</div>
-<div id="prayer-times">Mengambil jadwal sholat...</div>
-<div id="alert"></div>
 
-<audio id="alarm">
-    <source src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" type="audio/mpeg">
-</audio>
+<div id="prayer-box">
+    <div class="item">
+        <div class="label">Subuh</div>
+        <div class="time" id="subuh">--:--</div>
+    </div>
+    <div class="item">
+        <div class="label">Dzuhur</div>
+        <div class="time" id="dzuhur">--:--</div>
+    </div>
+    <div class="item">
+        <div class="label">Ashar</div>
+        <div class="time" id="ashar">--:--</div>
+    </div>
+    <div class="item">
+        <div class="label">Maghrib</div>
+        <div class="time" id="maghrib">--:--</div>
+    </div>
+    <div class="item">
+        <div class="label">Isya</div>
+        <div class="time" id="isya">--:--</div>
+    </div>
+</div>
 
 <script>
     // ============================
-    // Fungsi Tampil Jam
+    // JAM DIGITAL
     // ============================
     function updateClock() {
         let now = new Date();
         let h = String(now.getHours()).padStart(2, '0');
         let m = String(now.getMinutes()).padStart(2, '0');
         let s = String(now.getSeconds()).padStart(2, '0');
-        
         document.getElementById("clock").textContent = `${h}:${m}:${s}`;
-        updateAlert(`${h}:${m}`);
     }
     setInterval(updateClock, 1000);
     updateClock();
 
     // ============================
-    // Hari & Tanggal Indonesia
+    // JADWAL SHOLAT GAMPING SLEMAN
     // ============================
-    function updateDate() {
-        let now = new Date();
-        let hari = ["Mingggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
-        let bulan = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
-        
-        let tgl = `${hari[now.getDay()]}, ${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()}`;
-        document.getElementById("date").textContent = tgl;
-    }
-    updateDate();
+    fetch("https://api.aladhan.com/v1/timingsByAddress?address=Gamping,Sleman,Indonesia")
+        .then(res => res.json())
+        .then(data => {
 
-   // ============================
-// Jadwal Sholat API (Gamping)
-// ============================
-let prayerTimes = {};
+            document.getElementById("subuh").textContent   = data.data.timings.Fajr.substring(0,5);
+            document.getElementById("dzuhur").textContent  = data.data.timings.Dhuhr.substring(0,5);
+            document.getElementById("ashar").textContent   = data.data.timings.Asr.substring(0,5);
+            document.getElementById("maghrib").textContent = data.data.timings.Maghrib.substring(0,5);
+            document.getElementById("isya").textContent    = data.data.timings.Isha.substring(0,5);
 
-fetch("https://api.aladhan.com/v1/timingsByCity?city=Gamping&country=Indonesia&method=2")
-    .then(res => res.json())
-    .then(data => {
-        prayerTimes = {
-            Subuh: data.data.timings.Fajr.substring(0,5),
-            Dzuhur: data.data.timings.Dhuhr.substring(0,5),
-            Ashar: data.data.timings.Asr.substring(0,5),
-            Maghrib: data.data.timings.Maghrib.substring(0,5),
-            Isya: data.data.timings.Isha.substring(0,5)
-        };
-
-        document.getElementById("prayer-times").innerHTML =
-            `Subuh: ${prayerTimes.Subuh}<br>
-             Dzuhur: ${prayerTimes.Dzuhur}<br>
-             Ashar: ${prayerTimes.Ashar}<br>
-             Maghrib: ${prayerTimes.Maghrib}<br>
-             Isya: ${prayerTimes.Isya}`;
-    });
-
-    // ============================
-    // ADZAN + ALARM + IQOMAH
-    // ============================
-    let iqomahTimer = null;
-    let alarmPlayedToday = {};
-
-    function updateAlert(currentTime) {
-        for (let key in prayerTimes) {
-            if (currentTime === prayerTimes[key] && !alarmPlayedToday[key]) {
-                alarmPlayedToday[key] = true;
-
-                playAdzanAlarm();
-                startIqomahCountdown(key);
-            }
-        }
-    }
-
-    function playAdzanAlarm() {
-        let alarm = document.getElementById("alarm");
-        alarm.play();
-        document.getElementById("alert").textContent = "ADZAN";
-
-        setTimeout(() => {
-            alarm.pause();
-            alarm.currentTime = 0;
-        }, 5000);
-    }
-
-    function startIqomahCountdown(prayerName) {
-        let seconds = 15 * 60; // 15 menit
-
-        clearInterval(iqomahTimer);
-
-        iqomahTimer = setInterval(() => {
-            seconds--;
-
-            if (seconds <= 0) {
-                clearInterval(iqomahTimer);
-                document.getElementById("alert").textContent = "IQOMAH";
-                return;
-            }
-
-            let m = Math.floor(seconds / 60);
-            let s = seconds % 60;
-
-            document.getElementById("alert").textContent =
-                `IQOMAH ${prayerName} dalam ${m}:${String(s).padStart(2,'0')}`;
-        }, 1000);
-    }
+        });
 </script>
 
 </body>
 </html>
-

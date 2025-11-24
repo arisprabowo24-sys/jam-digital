@@ -56,13 +56,14 @@
 
 <script>
     // ============================
-    // Fungsi Tampil Jam
+    // JAM DIGITAL
     // ============================
     function updateClock() {
         let now = new Date();
         let h = String(now.getHours()).padStart(2, '0');
         let m = String(now.getMinutes()).padStart(2, '0');
         let s = String(now.getSeconds()).padStart(2, '0');
+
         document.getElementById("clock").textContent = ${h}:${m}:${s};
 
         updateAlert(${h}:${m});
@@ -71,7 +72,7 @@
     updateClock();
 
     // ============================
-    // Hari & Tanggal Indonesia
+    // HARI TANGGAL INDONESIA
     // ============================
     function updateDate() {
         let now = new Date();
@@ -83,8 +84,8 @@
     updateDate();
 
     // ============================
-    // Jadwal Sholat Otomatis API
-    // Lokasi: Gamping, Sleman
+    // AMBIL JADWAL SHOLAT
+    // GAMPING, SLEMAN
     // ============================
     let prayerTimes = {};
     fetch("https://api.aladhan.com/v1/timingsByAddress?address=Gamping,Sleman,Indonesia")
@@ -107,7 +108,7 @@
         });
 
     // ============================
-    // ADZAN + ALARM + IQOMAH TIMER
+    // ADZAN + ALARM + IQOMAH
     // ============================
     let iqomahTimer = null;
     let alarmPlayedToday = {};
@@ -119,23 +120,26 @@
 
                 playAdzanAlarm();
                 startIqomahCountdown(key);
+                return;
             }
         }
     }
 
     function playAdzanAlarm() {
         let alarm = document.getElementById("alarm");
-        alarm.play();
+
         document.getElementById("alert").textContent = "ADZAN";
-        
+
+        alarm.play();
+
         setTimeout(() => {
             alarm.pause();
             alarm.currentTime = 0;
-        }, 5000); // alarm 5 detik
+        }, 5000);
     }
 
     function startIqomahCountdown(prayerName) {
-        let seconds = 15 * 60; // 15 menit
+        let seconds = 15 * 60;
         clearInterval(iqomahTimer);
 
         iqomahTimer = setInterval(() => {
@@ -149,9 +153,9 @@
 
             let m = Math.floor(seconds / 60);
             let s = seconds % 60;
+
             document.getElementById("alert").textContent =
                 IQOMAH ${prayerName} dalam ${m}:${String(s).padStart(2,'0')};
-
         }, 1000);
     }
 </script>

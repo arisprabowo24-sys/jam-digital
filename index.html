@@ -44,6 +44,13 @@
         font-size: 4.5vw;
         margin-top: 5px;
     }
+
+    #alert {
+        margin-top: 15px;
+        font-size: 7vw;
+        font-weight: bold;
+        color: yellow;
+    }
 </style>
 
 </head>
@@ -74,34 +81,124 @@
     </div>
 </div>
 
+<div id="alert"></div>
+
+<audio id="beep">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" type="audio/mpeg">
+</audio>
+
 <script>
-    // ============================
     // JAM DIGITAL
-    // ============================
     function updateClock() {
         let now = new Date();
         let h = String(now.getHours()).padStart(2, '0');
         let m = String(now.getMinutes()).padStart(2, '0');
         let s = String(now.getSeconds()).padStart(2, '0');
+
         document.getElementById("clock").textContent = `${h}:${m}:${s}`;
+
+        checkAdzan(`${h}:${m}`);
     }
     setInterval(updateClock, 1000);
-    updateClock();
 
-    // ============================
-    // JADWAL SHOLAT GAMPING SLEMAN
-    // ============================
+
+    // JADWAL SHOLAT
+    let prayerTimes = {};
+    let alarmPlayedToday = {};  // Supaya alarm tidak bunyi berkali-kali
+    let iqomahTimer = null;
+
     fetch("https://api.aladhan.com/v1/timingsByAddress?address=Gamping,Sleman,Indonesia")
         .then(res => res.json())
         .then(data => {
 
-            document.getElementById("subuh").textContent   = data.data.timings.Fajr.substring(0,5);
-            document.getElementById("dzuhur").textContent  = data.data.timings.Dhuhr.substring(0,5);
-            document.getElementById("ashar").textContent   = data.data.timings.Asr.substring(0,5);
-            document.getElementById("maghrib").textContent = data.data.timings.Maghrib.substring(0,5);
-            document.getElementById("isya").textContent    = data.data.timings.Isha.substring(0,5);
+            prayerTimes = {
+                Subuh: data.data.timings.Fajr.substring(0,5),
+                Dzuhur: data.data.timings.Dhuhr.substring(0,5),
+                Ashar: data.data.timings.Asr.substring(0,5),
+                Maghrib: data.data.timings.Maghrib.substring(0,5),
+                Isya: data.data.timings.Isha.substring(0,5)
+            };
 
+            document.getElementById("subuh").textContent = prayerTimes.Subuh;
+            document.getElementById("dzuhur").textContent = prayerTimes.Dzuhur;
+            document.getElementById("ashar").textContent = prayerTimes.Ashar;
+            document.getElementById("maghrib").textContent = prayerTimes.Maghrib;
+            document.getElementById("isya").textContent = prayerTimes.Isya;
         });
+
+
+    // ==============================
+    // CEK WAKTU SHOLAT
+    // ==============================
+    function checkAdzan(currentTime) {
+        for (let key in prayerTimes) {
+
+            if (currentTime === prayerTimes[key] && !alarmPlayedToday[key]) {
+                alarmPlayedToday[key] = true;
+
+                playBeep5x();
+                showAdzanText();
+                startIqomahCountdown();
+            }
+        }
+    }
+
+
+    // ==============================
+    // ALARM BEEP 5x
+    // ==============================
+    function playBeep5x() {
+        let audio = document.getElementById("beep");
+        let count = 0;
+
+        let interval = setInterval(() => {
+            audio.currentTime = 0;
+            audio.play();
+            count++;
+
+            if (count >= 5) {
+                clearInterval(interval);
+            }
+        }, 1000);
+    }
+
+
+    // ==============================
+    // TAMPILKAN SAATNYA ADZAN
+    // ==============================
+    function showAdzanText() {
+        document.getElementById("alert").textContent = "SAATNYA ADZAN";
+        setTimeout(() => {
+            document.getElementById("alert").textContent = "";
+        }, 7000);
+    }
+
+
+    // ==============================
+    // HITUNG MUNDUR IQOMAH 15 MENIT
+    // ==============================
+    function startIqomahCountdown() {
+        let totalSeconds = 15 * 60;
+
+        clearInterval(iqomahTimer);
+
+        iqomahTimer = setInterval(() => {
+            totalSeconds--;
+
+            if (totalSeconds <= 0) {
+                document.getElementById("alert").textContent = "IQOMAH";
+                clearInterval(iqomahTimer);
+                return;
+            }
+
+            let m = Math.floor(totalSeconds / 60);
+            let s = totalSeconds % 60;
+
+            document.getElementById("alert").textContent =
+                `IQOMAH ${m}:${String(s).padStart(2, '0')}`;
+
+        }, 1000);
+    }
 </script>
 
 </body>

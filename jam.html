@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Jam Digital</title>
+<title>Jam Digital + Waktu Sholat</title>
 
 <style>
     body {
@@ -19,54 +19,142 @@
     }
 
     #clock {
-        font-size: 23vw;
+        font-size: 22vw;
         font-weight: bold;
-        letter-spacing: 0.03em;
-        line-height: 1;
-        margin-bottom: 2vh;
     }
 
     #date {
-        font-size: 6vw;
-        font-weight: normal;
-        letter-spacing: 0.05em;
+        font-size: 5vw;
+        margin-top: -20px;
+    }
+
+    #prayer-times {
+        font-size: 4.5vw;
+        margin-top: 10px;
+        line-height: 1.4;
+    }
+
+    #alert {
+        font-size: 12vw;
+        color: yellow;
+        margin-top: 20px;
+        font-weight: bold;
     }
 </style>
 
-<script>
-function updateClock() {
-    let now = new Date();
-
-    // --- Jam ---
-    let h = String(now.getHours()).padStart(2, '0');
-    let m = String(now.getMinutes()).padStart(2, '0');
-    let s = String(now.getSeconds()).padStart(2, '0');
-    document.getElementById("clock").textContent = h + ":" + m + ":" + s;
-
-    // --- Hari & Tanggal Indonesia ---
-    let hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-    let bulan = [
-        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-    ];
-
-    let namaHari = hari[now.getDay()];
-    let tanggal = now.getDate();
-    let namaBulan = bulan[now.getMonth()];
-    let tahun = now.getFullYear();
-
-    document.getElementById("date").textContent =
-        namaHari + ", " + tanggal + " " + namaBulan + " " + tahun;
-}
-
-setInterval(updateClock, 500);
-</script>
-
 </head>
-<body onload="updateClock()">
+<body>
 
-    <div id="clock">00:00:00</div>
-    <div id="date">Senin, 1 Januari 2025</div>
+<div id="clock">00:00:00</div>
+<div id="date">Loading...</div>
+<div id="prayer-times">Mengambil jadwal sholat...</div>
+<div id="alert"></div>
+
+<audio id="alarm">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+    // ============================
+    // Fungsi Tampil Jam
+    // ============================
+    function updateClock() {
+        let now = new Date();
+        let h = String(now.getHours()).padStart(2, '0');
+        let m = String(now.getMinutes()).padStart(2, '0');
+        let s = String(now.getSeconds()).padStart(2, '0');
+        document.getElementById("clock").textContent = ${h}:${m}:${s};
+
+        updateAlert(${h}:${m});
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // ============================
+    // Hari & Tanggal Indonesia
+    // ============================
+    function updateDate() {
+        let now = new Date();
+        let hari = ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"];
+        let bulan = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+        let tgl = ${hari[now.getDay()]}, ${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()};
+        document.getElementById("date").textContent = tgl;
+    }
+    updateDate();
+
+    // ============================
+    // Jadwal Sholat Otomatis API
+    // Lokasi: Gamping, Sleman
+    // ============================
+    let prayerTimes = {};
+    fetch("https://api.aladhan.com/v1/timingsByAddress?address=Gamping,Sleman,Indonesia")
+        .then(res => res.json())
+        .then(data => {
+            prayerTimes = {
+                Subuh: data.data.timings.Fajr,
+                Dzuhur: data.data.timings.Dhuhr,
+                Ashar: data.data.timings.Asr,
+                Maghrib: data.data.timings.Maghrib,
+                Isya: data.data.timings.Isha
+            };
+
+            document.getElementById("prayer-times").innerHTML =
+                `Subuh: ${prayerTimes.Subuh}<br>
+                Dzuhur: ${prayerTimes.Dzuhur}<br>
+                Ashar: ${prayerTimes.Ashar}<br>
+                Maghrib: ${prayerTimes.Maghrib}<br>
+                Isya: ${prayerTimes.Isya}`;
+        });
+
+    // ============================
+    // ADZAN + ALARM + IQOMAH TIMER
+    // ============================
+    let iqomahTimer = null;
+    let alarmPlayedToday = {};
+
+    function updateAlert(currentTime) {
+        for (let key in prayerTimes) {
+            if (currentTime === prayerTimes[key] && !alarmPlayedToday[key]) {
+                alarmPlayedToday[key] = true;
+
+                playAdzanAlarm();
+                startIqomahCountdown(key);
+            }
+        }
+    }
+
+    function playAdzanAlarm() {
+        let alarm = document.getElementById("alarm");
+        alarm.play();
+        document.getElementById("alert").textContent = "ADZAN";
+        
+        setTimeout(() => {
+            alarm.pause();
+            alarm.currentTime = 0;
+        }, 5000); // alarm 5 detik
+    }
+
+    function startIqomahCountdown(prayerName) {
+        let seconds = 15 * 60; // 15 menit
+        clearInterval(iqomahTimer);
+
+        iqomahTimer = setInterval(() => {
+            seconds--;
+
+            if (seconds <= 0) {
+                clearInterval(iqomahTimer);
+                document.getElementById("alert").textContent = "IQOMAH";
+                return;
+            }
+
+            let m = Math.floor(seconds / 60);
+            let s = seconds % 60;
+            document.getElementById("alert").textContent =
+                IQOMAH ${prayerName} dalam ${m}:${String(s).padStart(2,'0')};
+
+        }, 1000);
+    }
+</script>
 
 </body>
 </html>

@@ -3,14 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masjid Darussalam Balecatur</title>
+    <title>Jadwal Shalat Masjid Darussalam</title>
     <style>
-        /* CSS UTAMA */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
-        
+        /* CSS RESET & TV OPTIMIZATION */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
         body {
             height: 100vh;
-            /* Pastikan nama file gambar sesuai dengan yang ada di GitHub Anda */
+            width: 100vw;
+            /* Pastikan nama file gambar sesuai: bg-masjid.jpg atau MASJID DARUSSALAM.jpg */
             background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('bg-masjid.jpg');
             background-size: cover;
             background-position: center;
@@ -18,65 +24,96 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            /* SAFE ZONE UNTUK TV AGAR TIDAK TERPOTONG */
+            padding: 20px; 
         }
 
+        /* HEADER */
         header {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px 50px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 5px solid #ffd700;
+            border-bottom: 4px solid #ffd700;
+            border-radius: 10px 10px 0 0;
         }
 
-        .masjid-info h1 { font-size: 3.5rem; color: #ffd700; text-shadow: 3px 3px 6px rgba(0,0,0,1); }
-        .masjid-info p { font-size: 1.5rem; color: #fff; }
-
-        .waktu-sekarang { text-align: right; }
-        #jam { font-size: 5rem; font-weight: bold; line-height: 1; }
-        #tanggal { font-size: 1.8rem; color: #ffd700; }
-
-        .konten-tengah { flex: 1; display: flex; padding: 30px; gap: 30px; }
-
-        .sidebar { width: 450px; display: flex; flex-direction: column; gap: 25px; }
-        
-        .card { 
-            background: rgba(0, 0, 0, 0.75); 
-            border-radius: 15px; 
-            border-left: 10px solid #2e7d32;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-        }
-
-        .card-header { 
-            background: #2e7d32; 
-            padding: 15px; 
-            text-align: center; 
-            font-weight: bold; 
-            font-size: 1.5rem; 
+        .masjid-info h1 {
+            font-size: 2.2rem;
             color: #ffd700;
-            border-radius: 0 15px 0 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
 
-        .card-body { padding: 20px; }
-        .baris { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 1.4rem; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; }
-        .highlight { color: #ffd700; font-weight: bold; font-size: 1.8rem; }
+        .masjid-info p { font-size: 1rem; color: #eee; }
 
-        /* JADWAL SHOLAT DI BAWAH */
-        .footer-jadwal {
-            background: rgba(0, 0, 0, 0.9);
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
+        .clock-container { text-align: right; }
+        #jam { font-size: 3.5rem; font-weight: bold; line-height: 1; }
+        #tanggal { font-size: 1.2rem; color: #ffd700; }
+
+        /* MAIN AREA */
+        .container {
+            flex: 1;
+            display: flex;
             padding: 20px 0;
-            border-top: 6px solid #2e7d32;
+            gap: 20px;
+            overflow: hidden;
         }
 
-        .sholat-box { text-align: center; border-right: 2px solid rgba(255,255,255,0.2); }
-        .sholat-box:last-child { border: none; }
-        .sholat-nama { font-size: 1.8rem; color: #ffd700; font-weight: bold; margin-bottom: 5px; }
-        .sholat-jam { font-size: 3.5rem; font-weight: bold; }
+        .sidebar {
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.65);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .card-header {
+            background: #2e7d32;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: #ffd700;
+        }
+
+        .card-body { padding: 15px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 1.1rem; }
+        .total { border-top: 1px solid #ffd700; padding-top: 5px; color: #ffd700; font-weight: bold; font-size: 1.3rem; }
+
+        /* JADWAL SHALAT (BAWAH) */
+        .footer-jadwal {
+            background: rgba(0, 0, 0, 0.85);
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            padding: 10px 0;
+            border-top: 4px solid #2e7d32;
+            border-radius: 5px;
+        }
+
+        .sholat-item {
+            text-align: center;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+        .sholat-item:last-child { border: none; }
+        .sholat-name { font-size: 1.1rem; color: #ffd700; font-weight: bold; }
+        .sholat-time { font-size: 2.2rem; font-weight: bold; display: block; }
 
         /* RUNNING TEXT */
-        .marquee-box { background: #1b5e20; color: white; padding: 15px 0; font-size: 1.8rem; }
+        .running-text {
+            background: #2e7d32;
+            color: white;
+            padding: 8px 0;
+            font-size: 1.3rem;
+            margin-top: 10px;
+            border-radius: 0 0 10px 10px;
+        }
 
         /* TAMPILAN IQOMAH (OVERLAY) */
         #layar-iqomah {
@@ -91,126 +128,128 @@
     <header>
         <div class="masjid-info">
             <h1>MASJID DARUSSALAM</h1>
-            <p>Balecatur, Gamping, Sleman, Yogyakarta</p>
+            <p>PERUM JATISAWIT ASRI, JITENGAN, BALECATUR, GAMPING, SLEMAN</p>
         </div>
-        <div class="waktu-sekarang">
-            <div id="jam">00:00:00</div>
-            <div id="tanggal">Memuat Tanggal...</div>
+        <div class="clock-container">
+            <span id="jam">00:00:00</span>
+            <span id="tanggal">...</span>
         </div>
     </header>
 
-    <div class="konten-tengah">
+    <div class="container">
         <aside class="sidebar">
             <div class="card">
-                <div class="card-header">INFO KAS MASJID</div>
+                <div class="card-header">SALDO KAS MASJID</div>
                 <div class="card-body">
-                    <div class="baris"><span>Pemasukan</span><span>1.000.000</span></div>
-                    <div class="baris"><span>Pengeluaran</span><span>500.000</span></div>
-                    <div class="baris"><span class="highlight">SALDO AKHIR</span><span class="highlight">15.500.000</span></div>
+                    <div class="row"><span>Pemasukan</span><span>1.000.000</span></div>
+                    <div class="row"><span>Pengeluaran</span><span>500.000</span></div>
+                    <div class="row total"><span>SALDO AKHIR</span><span>15.500.000</span></div>
                 </div>
             </div>
+
             <div class="card">
                 <div class="card-header">PETUGAS JUM'AT</div>
                 <div class="card-body">
-                    <div class="baris"><span>Imam</span><span>H. SOBRI</span></div>
-                    <div class="baris"><span>Khatib</span><span>H. MAULANA</span></div>
-                    <div class="baris"><span>Muadzin</span><span>UST. BILAL</span></div>
+                    <div class="row"><span>IMAM</span><span>UST. LUKMAN JOHAN</span></div>
+                    <div class="row"><span>KHATIB</span><span>UST. LUKMAN JOHAN</span></div>
+                    <div class="row"><span>MUADZIN</span><span>UST JATMIKO</span></div>
                 </div>
             </div>
         </aside>
     </div>
 
     <div class="footer-jadwal">
-        <div class="sholat-box"><div class="sholat-nama">SUBUH</div><div class="sholat-jam" id="Fajr">--:--</div></div>
-        <div class="sholat-box"><div class="sholat-nama">DZUHUR</div><div class="sholat-jam" id="Dhuhr">--:--</div></div>
-        <div class="sholat-box"><div class="sholat-nama">ASHAR</div><div class="sholat-jam" id="Asr">--:--</div></div>
-        <div class="sholat-box"><div class="sholat-nama">MAGHRIB</div><div class="sholat-jam" id="Maghrib">--:--</div></div>
-        <div class="sholat-box"><div class="sholat-nama">ISYA</div><div class="sholat-jam" id="Isha">--:--</div></div>
+        <div class="sholat-item"><span class="sholat-name">SUBUH</span><span class="sholat-time" id="sh-Fajr">--:--</span></div>
+        <div class="sholat-item"><span class="sholat-name">DZUHUR</span><span class="sholat-time" id="sh-Dhuhr">--:--</span></div>
+        <div class="sholat-item"><span class="sholat-name">ASHAR</span><span class="sholat-time" id="sh-Asr">--:--</span></div>
+        <div class="sholat-item"><span class="sholat-name">MAGHRIB</span><span class="sholat-time" id="sh-Maghrib">--:--</span></div>
+        <div class="sholat-item"><span class="sholat-name">ISYA</span><span class="sholat-time" id="sh-Isha">--:--</span></div>
+        <div class="sholat-item"><span class="sholat-name">SYURUQ</span><span class="sholat-time" id="sh-Sunrise">--:--</span></div>
     </div>
 
-    <div class="marquee-box">
-        <marquee scrollamount="8">Luruskan dan rapatkan shaf demi kesempurnaan shalat jamaah — Matikan atau senyapkan handphone saat berada di dalam Masjid — Jagalah kebersihan Masjid kita.</marquee>
+    <div class="running-text">
+        <marquee behavior="scroll" direction="left" scrollamount="6">
+            "Barangsiapa yang membangun masjid karena Allah, maka Allah akan membangunkan baginya rumah di surga." (HR. Bukhari & Muslim) — Jagalah kebersihan Masjid kita — Matikan Handphone saat berada di dalam Masjid — Luruskan Shaf sebelum Shalat dimulai.
+        </marquee>
     </div>
 
     <div id="layar-iqomah">
-        <h2 style="font-size: 4rem; color: #ffd700;" id="teks-sholat">WAKTU SHOLAT</h2>
-        <p style="font-size: 2.5rem; margin: 20px;">Luruskan Shaf - Matikan HP</p>
-        <div id="countdown" style="font-size: 15rem; font-weight: bold; color: white;">15:00</div>
-        <p style="font-size: 2rem; font-style: italic; color: #ccc; margin-top: 40px;">"Berdirilah kalian untuk shalat, maka Allah akan merahmati kalian."</p>
+        <h2 style="font-size: 3.5rem; color: #ffd700;" id="teks-sholat">WAKTU SHOLAT</h2>
+        <p style="font-size: 2rem; margin: 20px; color: white;">Luruskan Shaf - Matikan HP</p>
+        <div id="countdown" style="font-size: 12rem; font-weight: bold; color: white;">15:00</div>
+        <p style="font-size: 1.8rem; font-style: italic; color: #ccc; margin-top: 30px;">"Shalatlah seakan-akan ini adalah shalat terakhirmu."</p>
     </div>
 
     <script>
-        let jadwalSholat = {};
-        let statusIqomah = false;
+        let jadwalGlobal = {};
+        let isIqomah = false;
 
-        // 1. FUNGSI JAM & CEK IQOMAH
-        function updateWaktu() {
-            const sekarang = new Date();
-            const jamMenit = sekarang.getHours().toString().padStart(2, '0') + ":" + 
-                           sekarang.getMinutes().toString().padStart(2, '0');
+        function updateClock() {
+            const now = new Date();
+            const jamMenit = now.getHours().toString().padStart(2, '0') + ":" + 
+                             now.getMinutes().toString().padStart(2, '0');
             
-            document.getElementById('jam').innerText = sekarang.toLocaleTimeString('id-ID');
-            document.getElementById('tanggal').innerText = sekarang.toLocaleDateString('id-ID', {
-                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+            document.getElementById('jam').innerText = now.toLocaleTimeString('id-ID');
+            document.getElementById('tanggal').innerText = now.toLocaleDateString('id-ID', { 
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' 
             });
 
-            // Cek apakah waktu sekarang cocok dengan jadwal sholat
-            const daftar = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-            daftar.forEach(s => {
-                if (jadwalSholat[s] === jamMenit && !statusIqomah) {
-                    mulaiIqomah(s);
+            // Cek Waktu Sholat (Tanpa Syuruq untuk Iqomah)
+            const daftarSholat = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+            daftarSholat.forEach(sholat => {
+                if (jadwalGlobal[sholat] === jamMenit && !isIqomah) {
+                    mulaiIqomah(sholat);
                 }
             });
         }
 
-        // 2. FUNGSI AMBIL JADWAL DARI API (BALECATUR)
-        async function ambilJadwal() {
+        async function getJadwalSholat() {
+            const lat = -7.8014; const lng = 110.3060; // Balecatur
+            const now = new Date();
+            const url = `https://api.aladhan.com/v1/timings/${now.getDate()}-${now.getMonth()+1}-${now.getFullYear()}?latitude=${lat}&longitude=${lng}&method=20`;
+            
             try {
-                // Koordinat Balecatur, Gamping
-                const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Sleman&country=Indonesia&method=20');
-                const data = await res.json();
-                jadwalSholat = data.data.timings;
+                const response = await fetch(url);
+                const result = await response.json();
+                const t = result.data.timings;
+                jadwalGlobal = t;
 
-                // Tampilkan di layar bawah
-                document.getElementById('Fajr').innerText = jadwalSholat.Fajr;
-                document.getElementById('Dhuhr').innerText = jadwalSholat.Dhuhr;
-                document.getElementById('Asr').innerText = jadwalSholat.Asr;
-                document.getElementById('Maghrib').innerText = jadwalSholat.Maghrib;
-                document.getElementById('Isha').innerText = jadwalSholat.Isha;
-            } catch (e) {
-                console.error("Gagal koneksi internet");
-            }
+                document.getElementById('sh-Fajr').innerText = t.Fajr;
+                document.getElementById('sh-Dhuhr').innerText = t.Dhuhr;
+                document.getElementById('sh-Asr').innerText = t.Asr;
+                document.getElementById('sh-Maghrib').innerText = t.Maghrib;
+                document.getElementById('sh-Isha').innerText = t.Isha;
+                document.getElementById('sh-Sunrise').innerText = t.Sunrise;
+            } catch (err) { console.log("Gagal memuat jadwal"); }
         }
 
-        // 3. FUNGSI HITUNG MUNDUR IQOMAH
         function mulaiIqomah(namaSholat) {
-            statusIqomah = true;
-            let waktu = 15 * 60; // 15 menit
+            isIqomah = true;
+            let durasi = 15 * 60; 
             const overlay = document.getElementById('layar-iqomah');
             const display = document.getElementById('countdown');
             const teks = document.getElementById('teks-sholat');
 
-            teks.innerText = "WAKTU SHOLAT " + namaSholat.toUpperCase();
+            teks.innerText = "WAKTU SHOLAT " + (namaSholat === 'Fajr' ? 'SUBUH' : namaSholat.toUpperCase());
             overlay.style.display = 'flex';
 
             const timer = setInterval(() => {
-                let m = Math.floor(waktu / 60);
-                let s = waktu % 60;
+                durasi--;
+                let m = Math.floor(durasi / 60);
+                let s = durasi % 60;
                 display.innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-                
-                waktu--;
 
-                if (waktu < 0) {
+                if (durasi <= 0) {
                     clearInterval(timer);
                     overlay.style.display = 'none';
-                    statusIqomah = false;
+                    isIqomah = false;
                 }
             }, 1000);
         }
 
-        setInterval(updateWaktu, 1000);
-        updateWaktu();
-        ambilJadwal();
+        setInterval(updateClock, 1000);
+        updateClock();
+        getJadwalSholat();
     </script>
 </body>
 </html>

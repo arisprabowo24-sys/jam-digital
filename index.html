@@ -9,102 +9,101 @@
         
         body {
             height: 100vh; width: 100vw;
-            background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('bg-masjid.jpg');
+            background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('bg-masjid.jpg');
             background-size: cover; background-position: center; color: white;
             display: flex; flex-direction: column; overflow: hidden;
-            /* SAFE ZONE: Mencegah tampilan terpotong di layar TV */
-            padding: 40px; 
+            /* Memberikan ruang aman di sekeliling layar TV */
+            padding: 20px 40px; 
         }
 
-        /* 1. HEADER (TENGAH) DENGAN BACKGROUND TRANSPARAN */
+        /* 1. HEADER TENGAH ATAS */
         .header-center {
             text-align: center;
-            background: rgba(0, 0, 0, 0.6); /* Hitam Transparan */
-            padding: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
             border-radius: 15px;
-            margin-bottom: 30px;
-            border: 1px solid rgba(255, 215, 0, 0.3);
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.4);
         }
         .header-center h1 {
-            font-size: 4.5rem;
+            font-size: 3.5rem; /* Ukuran disesuaikan agar tidak terlalu memakan tempat */
             color: #ffd700;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            margin-bottom: 5px;
         }
-        .header-center p { font-size: 1.4rem; color: #fff; letter-spacing: 1px; }
+        .header-center p { font-size: 1.2rem; color: #fff; }
 
         .main-content {
             flex: 1;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 40px;
+            gap: 30px;
+            min-height: 0; /* Penting agar kontainer bisa mengecil */
         }
 
-        /* 2. SIDEBAR KIRI (KAS & PETUGAS) */
+        /* 2. KAS & PETUGAS (KIRI) */
         .sidebar-left {
-            width: 38%;
+            width: 40%;
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 15px;
         }
         .card {
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.75);
+            border-radius: 12px;
             border: 2px solid #2e7d32;
             overflow: hidden;
         }
         .card-header {
             background: #2e7d32;
-            padding: 15px;
+            padding: 8px;
             text-align: center;
             font-weight: bold;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             color: #ffd700;
         }
-        .card-body { padding: 20px; }
-        .row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 1.6rem; }
-        .total { border-top: 2px solid #ffd700; padding-top: 10px; color: #ffd700; font-weight: bold; font-size: 1.9rem; }
+        .card-body { padding: 15px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 1.5rem; }
+        .total { border-top: 2px solid #ffd700; padding-top: 8px; color: #ffd700; font-weight: bold; font-size: 1.7rem; }
 
-        /* 5. JAM BESAR (KANAN) DENGAN BACKGROUND TRANSPARAN */
+        /* 5. JAM (KANAN) */
         .clock-section {
-            background: rgba(0, 0, 0, 0.7); /* Hitam Transparan */
-            padding: 50px;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 30px;
             border-radius: 20px;
             text-align: center;
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             width: 55%;
         }
         #jam {
-            font-size: 9.5rem;
+            font-size: 8rem; /* Sedikit dikecilkan agar jadwal sholat bisa naik */
             font-weight: bold;
             color: white;
             line-height: 1;
         }
-        #tanggal-masehi { font-size: 2.2rem; color: #ffd700; margin-top: 15px; }
-        #tanggal-hijriah { font-size: 2rem; color: #00ff00; font-weight: bold; margin-top: 5px; }
+        #tanggal-masehi { font-size: 1.8rem; color: #ffd700; margin-top: 10px; }
+        #tanggal-hijriah { font-size: 1.8rem; color: #00ff00; font-weight: bold; }
 
-        /* 3. JADWAL SHOLAT (BAWAH) */
+        /* 3. JADWAL SHOLAT (BAWAH) - SEKARANG HARUS KELIHATAN */
         .footer-jadwal {
             background: rgba(0, 0, 0, 0.85);
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            padding: 15px 0;
-            border-top: 5px solid #2e7d32;
-            margin-top: 30px;
+            padding: 10px 0;
+            border-top: 4px solid #ffd700;
+            margin-top: 15px;
             border-radius: 10px;
         }
         .sholat-item { text-align: center; border-right: 1px solid rgba(255,255,255,0.1); }
-        .sholat-name { font-size: 1.6rem; color: #ffd700; font-weight: bold; }
-        .sholat-time { font-size: 3.5rem; font-weight: bold; display: block; }
+        .sholat-name { font-size: 1.4rem; color: #ffd700; font-weight: bold; }
+        .sholat-time { font-size: 2.8rem; font-weight: bold; display: block; }
 
         /* 4. RUNNING TEXT */
         .running-text {
             background: #2e7d32;
-            padding: 12px 0;
-            font-size: 1.8rem;
-            margin-top: 15px;
-            border-radius: 5px;
+            padding: 8px 0;
+            font-size: 1.5rem;
+            margin-top: 10px;
         }
 
         #layar-iqomah {
@@ -142,8 +141,8 @@
 
         <div class="clock-section">
             <div id="jam">00:00:00</div>
-            <div id="tanggal-masehi">Memuat...</div>
-            <div id="tanggal-hijriah">Memuat Hijriah...</div>
+            <div id="tanggal-masehi">Senin, 2 Maret 2026</div>
+            <div id="tanggal-hijriah">13 Ramadhan 1447 H</div>
         </div>
     </div>
 
@@ -157,7 +156,7 @@
     </div>
 
     <div class="running-text">
-        <marquee scrollamount="7">"Barangsiapa membangun masjid karena Allah, Allah bangunkan rumah di surga." — Matikan HP — Rapatkan Shaf.</marquee>
+        <marquee scrollamount="6">"Barangsiapa membangun masjid karena Allah, Allah bangunkan rumah di surga." — Matikan HP — Rapatkan Shaf.</marquee>
     </div>
 
     <div id="layar-iqomah">
@@ -168,7 +167,6 @@
     <script>
         let jadwalGlobal = {};
         let isIqomah = false;
-        let audioCtx = null;
 
         function updateClock() {
             const now = new Date();
@@ -177,7 +175,6 @@
             document.getElementById('jam').innerText = now.toLocaleTimeString('id-ID');
             document.getElementById('tanggal-masehi').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
             
-            // Perbaikan Tanggal Hijriah (API Aladhan untuk akurasi tinggi)
             if (jadwalGlobal.date) {
                 document.getElementById('tanggal-hijriah').innerText = 
                     `${jadwalGlobal.date.hijri.day} ${jadwalGlobal.date.hijri.month.en} ${jadwalGlobal.date.hijri.year} H`;
@@ -197,8 +194,7 @@
             try {
                 const res = await fetch(`https://api.aladhan.com/v1/timings/${now.getDate()}-${now.getMonth()+1}-${now.getFullYear()}?latitude=${lat}&longitude=${lng}&method=20`);
                 const data = await res.json();
-                jadwalGlobal = data.data; // Menyimpan seluruh data termasuk tanggal Hijriah
-                
+                jadwalGlobal = data.data;
                 const t = jadwalGlobal.timings;
                 document.getElementById('sh-Fajr').innerText = t.Fajr;
                 document.getElementById('sh-Dhuhr').innerText = t.Dhuhr;

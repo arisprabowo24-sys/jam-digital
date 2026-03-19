@@ -3,186 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Shalat Masjid Darussalam</title>
+    <title>HexaTest Simulator - Log & Reset</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; }
-        
+        :root {
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --primary: #00ff88;
+            --accent: #2980b9;
+            --danger: #ff4757;
+            --warning: #f39c12;
+            --text: #ffffff;
+        }
+
         body {
-            height: 100vh; width: 100vw;
-            background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('bg-masjid.jpg');
-            background-size: cover; background-position: center; color: white;
-            display: flex; flex-direction: column; overflow: hidden;
-            padding: 20px 40px; 
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
         }
 
-        /* HEADER */
-        .header-center {
-            text-align: center;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 20px;
+        .container { width: 95%; max-width: 900px; padding: 20px; }
+        
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
             border-radius: 15px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255, 215, 0, 0.4);
-        }
-        .header-center h1 { font-size: 3.5rem; color: #ffd700; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
-        .header-center p { font-size: 1.2rem; color: #fff; }
-
-        .main-content {
-            flex: 1; display: flex; justify-content: space-between; align-items: center; gap: 30px; min-height: 0;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
-        /* KAS & PETUGAS */
-        .sidebar-left { width: 40%; display: flex; flex-direction: column; gap: 15px; }
-        .card { background: rgba(0, 0, 0, 0.75); border-radius: 12px; border: 2px solid #2e7d32; overflow: hidden; }
-        .card-header { background: #2e7d32; padding: 8px; text-align: center; font-weight: bold; font-size: 1.6rem; color: #ffd700; }
-        .card-body { padding: 15px; }
-        .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 1.5rem; }
-        .total { border-top: 2px solid #ffd700; padding-top: 8px; color: #ffd700; font-weight: bold; font-size: 1.7rem; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #2d2d2d;
+            color: white;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
 
-        /* JAM */
-        .clock-section { background: rgba(0, 0, 0, 0.75); padding: 30px; border-radius: 20px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2); width: 55%; }
-        #jam { font-size: 8rem; font-weight: bold; color: white; line-height: 1; }
-        #tanggal-masehi { font-size: 1.8rem; color: #ffd700; margin-top: 10px; }
-        #tanggal-hijriah { font-size: 1.8rem; color: #00ff00; font-weight: bold; }
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.2s;
+            padding: 12px;
+        }
 
-        /* JADWAL SHOLAT */
-        .footer-jadwal { background: rgba(0, 0, 0, 0.85); display: grid; grid-template-columns: repeat(6, 1fr); padding: 10px 0; border-top: 4px solid #ffd700; margin-top: 15px; border-radius: 10px; }
-        .sholat-item { text-align: center; border-right: 1px solid rgba(255,255,255,0.1); }
-        .sholat-name { font-size: 1.4rem; color: #ffd700; font-weight: bold; }
-        .sholat-time { font-size: 2.8rem; font-weight: bold; display: block; }
+        .btn-start { background: var(--primary); color: #000; flex: 2; }
+        .btn-stop { background: var(--danger); color: white; flex: 1; }
+        .btn-save { background: var(--warning); color: white; width: 100%; margin-top: 10px; font-size: 1.1rem; }
+        
+        /* Log Buttons */
+        .log-controls { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-download { background: #27ae60; color: white; flex: 1; }
+        .btn-reset-log { background: #c0392b; color: white; flex: 1; }
 
-        .running-text { background: #2e7d32; padding: 8px 0; font-size: 1.5rem; margin-top: 10px; }
+        .control-group { display: flex; gap: 10px; }
 
-        /* PERBAIKAN LAYAR IQOMAH: Background Masjid + Nama Waktu */
-        #layar-iqomah {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('bg-masjid.jpg');
-            background-size: cover; background-position: center;
-            z-index: 10000; display: none;
-            flex-direction: column; align-items: center; justify-content: center;
+        /* Sensor Grid */
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .sensor-card {
+            background: #252525;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #333;
             text-align: center;
         }
-        #iqomah-sholat-name { font-size: 4rem; color: #ffd700; text-transform: uppercase; font-weight: bold; margin-bottom: 10px; }
-        #iqomah-title { font-size: 8rem; color: white; font-weight: bold; letter-spacing: 5px; }
-        #countdown { font-size: 15rem; color: #ffd700; font-weight: bold; line-height: 1; margin: 20px 0; }
-        #iqomah-msg { font-size: 2.5rem; color: white; }
+
+        .sensor-card.active { border-color: var(--primary); background: #1a3a2a; }
+        
+        .label { font-size: 0.7rem; color: #888; display: block; }
+        .time-val { font-size: 1.8rem; font-weight: bold; color: var(--primary); font-family: monospace; }
+
+        /* Table Log */
+        .table-container { overflow-x: auto; margin-top: 10px; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: #181818; }
+        th, td { border: 1px solid #333; padding: 10px; text-align: center; }
+        th { background: #2c3e50; color: white; }
+        tr:nth-child(even) { background: #222; }
+
+        @media (max-width: 600px) {
+            .time-val { font-size: 1.4rem; }
+            .log-controls { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
 
-    <div class="header-center">
-        <h1>MASJID DARUSSALAM</h1>
-        <p>PERUM JATISAWIT ASRI, BALECATUR, GAMPING, SLEMAN</p>
-    </div>
+    <div id="main-app" class="container">
+        <header style="text-align: center;">
+            <h1 style="margin-bottom: 5px;">HEXA SIMULATOR</h1>
+            <p style="color: #0cdfee; margin-top: 0;">Sistem by REVA ARYA SAPUTRA</p>
+        </header>
 
-    <div class="main-content">
-        <div class="sidebar-left">
-            <div class="card">
-                <div class="card-header">SALDO KAS MASJID</div>
-                <div class="card-body">
-                    <div class="row"><span>Pemasukan</span><span>1.000.000</span></div>
-                    <div class="row"><span>Pengeluaran</span><span>500.000</span></div>
-                    <div class="row total"><span>SALDO AKHIR</span><span>15.500.000</span></div>
-                </div>
+        <section class="card">
+            <input type="text" id="nama-atlet" placeholder="Masukkan Nama Atlet">
+            <div class="control-group">
+                <button id="btn-start" class="btn-start" onclick="startSimulasi()">START TEST</button>
+                <button id="btn-stop" class="btn-stop" onclick="stopSimulasi()">STOP</button>
             </div>
-            <div class="card">
-                <div class="card-header">PETUGAS JUM'AT</div>
-                <div class="card-body">
-                    <div class="row"><span>IMAM</span><span>UST. LUKMAN JOHAN</span></div>
-                    <div class="row"><span>KHATIB</span><span>UST. LUKMAN JOHAN</span></div>
-                </div>
+            <button id="btn-save" class="btn-save" onclick="saveToLog()" style="display:none;">SIMPAN DATA ATLET</button>
+        </section>
+
+        <section class="sensor-grid">
+            <div class="sensor-card" id="c1"><span class="label">GARIS 1</span><div class="time-val" id="sw1">00.00</div></div>
+            <div class="sensor-card" id="c2"><span class="label">GARIS 2</span><div class="time-val" id="sw2">00.00</div></div>
+            <div class="sensor-card" id="c3"><span class="label">GARIS 3</span><div class="time-val" id="sw3">00.00</div></div>
+            <div class="sensor-card" id="c4"><span class="label">GARIS 4</span><div class="time-val" id="sw4">00.00</div></div>
+            <div class="sensor-card" id="c5"><span class="label">GARIS 5</span><div class="time-val" id="sw5">00.00</div></div>
+            <div class="sensor-card" id="c6"><span class="label">GARIS 6</span><div class="time-val" id="sw6">00.00</div></div>
+        </section>
+
+        <section class="card">
+            <h3 style="margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 10px;">REKAPITULASI HASIL</h3>
+            <div class="table-container">
+                <table id="log-table">
+                    <thead>
+                        <tr>
+                            <th>NO</th>
+                            <th>NAMA ATLET</th>
+                            <th>L1</th><th>L2</th><th>L3</th><th>L4</th><th>L5</th><th>L6</th>
+                        </tr>
+                    </thead>
+                    <tbody id="log-body">
+                        </tbody>
+                </table>
             </div>
-        </div>
 
-        <div class="clock-section">
-            <div id="jam">00:00:00</div>
-            <div id="tanggal-masehi">--</div>
-            <div id="tanggal-hijriah">--</div>
-        </div>
-    </div>
-
-    <div class="footer-jadwal">
-        <div class="sholat-item"><span class="sholat-name">SUBUH</span><span class="sholat-time" id="sh-Fajr">--:--</span></div>
-        <div class="sholat-item"><span class="sholat-name">DZUHUR</span><span class="sholat-time" id="sh-Dhuhr">--:--</span></div>
-        <div class="sholat-item"><span class="sholat-name">ASHAR</span><span class="sholat-time" id="sh-Asr">--:--</span></div>
-        <div class="sholat-item"><span class="sholat-name">MAGHRIB</span><span class="sholat-time" id="sh-Maghrib">--:--</span></div>
-        <div class="sholat-item"><span class="sholat-name">ISYA</span><span class="sholat-time" id="sh-Isha">--:--</span></div>
-        <div class="sholat-item"><span class="sholat-name">SYURUQ</span><span class="sholat-time" id="sh-Sunrise">--:--</span></div>
-    </div>
-
-    <div class="running-text">
-        <marquee scrollamount="6">"Barangsiapa membangun masjid karena Allah, Allah bangunkan rumah di surga." — Matikan HP — Rapatkan Shaf.</marquee>
-    </div>
-
-    <div id="layar-iqomah">
-        <div id="iqomah-sholat-name">WAKTU SHOLAT</div>
-        <div id="iqomah-title">IQOMAH</div>
-        <div id="countdown">15:00</div>
-        <div id="iqomah-msg">Luruskan Shaf & Matikan HP</div>
+            <div class="log-controls">
+                <button class="btn-download" onclick="downloadXLS()">DOWNLOAD EXCEL (.XLS)</button>
+                <button class="btn-reset-log" onclick="clearLog()">RESET LOG DATA</button>
+            </div>
+        </section>
     </div>
 
     <script>
-        let jadwalGlobal = {};
-        let isIqomah = false;
+        let timerInterval;
+        let startTime;
+        let currentSensor = 1;
+        let dataLog = [];
+        let isRunning = false;
 
-        function updateClock() {
-            const now = new Date();
-            const jamMenit = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-            
-            document.getElementById('jam').innerText = now.toLocaleTimeString('id-ID');
-            document.getElementById('tanggal-masehi').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-            
-            if (jadwalGlobal.date) {
-                document.getElementById('tanggal-hijriah').innerText = 
-                    `${jadwalGlobal.date.hijri.day} ${jadwalGlobal.date.hijri.month.en} ${jadwalGlobal.date.hijri.year} H`;
-            }
+        function startSimulasi() {
+            const nama = document.getElementById('nama-atlet').value;
+            if(!nama) return alert("Harap isi nama atlet terlebih dahulu!");
+            if(isRunning) return;
 
-            const daftarSholat = { 'Fajr': 'SUBUH', 'Dhuhr': 'DZUHUR', 'Asr': 'ASHAR', 'Maghrib': 'MAGHRIB', 'Isha': 'ISYA' };
-            for (const [key, nama] of Object.entries(daftarSholat)) {
-                if (jadwalGlobal.timings && jadwalGlobal.timings[key] === jamMenit && !isIqomah) {
-                    mulaiIqomah(nama);
-                    break;
+            resetDisplay();
+            isRunning = true;
+            currentSensor = 1;
+            startTime = Date.now();
+            document.getElementById('btn-save').style.display = "none";
+            document.getElementById('c' + currentSensor).classList.add('active');
+
+            timerInterval = setInterval(updateTimer, 10);
+        }
+
+        function updateTimer() {
+            let elapsedTime = (Date.now() - startTime) / 1000;
+            let formattedTime = elapsedTime.toFixed(2);
+            
+            document.getElementById('sw' + currentSensor).innerText = formattedTime;
+
+            // Perpindahan otomatis (Simulasi sensor terdeteksi tiap 1 detik)
+            if (elapsedTime >= currentSensor) {
+                if (currentSensor < 6) {
+                    document.getElementById('c' + currentSensor).classList.remove('active');
+                    currentSensor++;
+                    document.getElementById('c' + currentSensor).classList.add('active');
+                } else {
+                    stopSimulasi();
+                    document.getElementById('btn-save').style.display = "block";
                 }
             }
         }
 
-        async function getJadwalSholat() {
-            const lat = -7.8014; const lng = 110.3060;
-            const now = new Date();
-            try {
-                const res = await fetch(`https://api.aladhan.com/v1/timings/${now.getDate()}-${now.getMonth()+1}-${now.getFullYear()}?latitude=${lat}&longitude=${lng}&method=20`);
-                const data = await res.json();
-                jadwalGlobal = data.data;
-                const t = jadwalGlobal.timings;
-                document.getElementById('sh-Fajr').innerText = t.Fajr;
-                document.getElementById('sh-Dhuhr').innerText = t.Dhuhr;
-                document.getElementById('sh-Asr').innerText = t.Asr;
-                document.getElementById('sh-Maghrib').innerText = t.Maghrib;
-                document.getElementById('sh-Isha').innerText = t.Isha;
-                document.getElementById('sh-Sunrise').innerText = t.Sunrise;
-                updateClock();
-            } catch (err) { console.log("Gagal muat jadwal"); }
+        function stopSimulasi() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            document.querySelectorAll('.sensor-card').forEach(c => c.classList.remove('active'));
         }
 
-        function mulaiIqomah(namaSholat) {
-            isIqomah = true;
-            let durasi = 15 * 60; // 15 menit
-            const overlay = document.getElementById('layar-iqomah');
-            const display = document.getElementById('countdown');
-            const sholatText = document.getElementById('iqomah-sholat-name');
+        function resetDisplay() {
+            for(let i=1; i<=6; i++) {
+                document.getElementById('sw'+i).innerText = "00.00";
+                document.getElementById('c'+i).classList.remove('active');
+            }
+        }
+
+        function saveToLog() {
+            const nama = document.getElementById('nama-atlet').value;
+            const rowData = {
+                no: dataLog.length + 1,
+                nama: nama,
+                l1: document.getElementById('sw1').innerText,
+                l2: document.getElementById('sw2').innerText,
+                l3: document.getElementById('sw3').innerText,
+                l4: document.getElementById('sw4').innerText,
+                l5: document.getElementById('sw5').innerText,
+                l6: document.getElementById('sw6').innerText
+            };
+
+            dataLog.push(rowData);
+            updateTable();
             
-            sholatText.innerText = "WAKTU " + namaSholat;
-            overlay.style.display = 'flex';
-
-            const timer = setInterval(() => {
-                durasi--;
-                let m = Math.floor(durasi / 60); let s = durasi % 60;
-                display.innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-                if (durasi <= 0) { clearInterval(timer); overlay.style.display = 'none'; isIqomah = false; }
-            }, 1000);
+            document.getElementById('nama-atlet').value = "";
+            document.getElementById('btn-save').style.display = "none";
+            resetDisplay();
         }
 
-        window.addEventListener('load', () => { getJadwalSholat(); setInterval(updateClock, 1000); });
+        function updateTable() {
+            const tbody = document.getElementById('log-body');
+            tbody.innerHTML = "";
+            dataLog.forEach((item, index) => {
+                const row = `<tr>
+                    <td>${index + 1}</td>
+                    <td>${item.nama}</td>
+                    <td>${item.l1}</td><td>${item.l2}</td><td>${item.l3}</td>
+                    <td>${item.l4}</td><td>${item.l5}</td><td>${item.l6}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function clearLog() {
+            if(confirm("Apakah Anda yakin ingin menghapus SEMUA data di tabel?")) {
+                dataLog = [];
+                updateTable();
+            }
+        }
+
+        function downloadXLS() {
+            if(dataLog.length === 0) return alert("Data kosong! Lakukan tes atlet dulu.");
+
+            const wsData = dataLog.map(item => ({
+                "NO": item.no,
+                "NAMA ATLET": item.nama,
+                "LOMPAT 1": item.l1,
+                "LOMPAT 2": item.l2,
+                "LOMPAT 3": item.l3,
+                "LOMPAT 4": item.l4,
+                "LOMPAT 5": item.l5,
+                "LOMPAT 6": item.l6
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(wsData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Hasil_Hexa");
+
+            XLSX.writeFile(workbook, "Rekap_HexaTest.xls");
+        }
     </script>
 </body>
 </html>
